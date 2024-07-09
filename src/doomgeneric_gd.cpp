@@ -26,16 +26,17 @@ static unsigned char convertToDoomKey(enumKeyCodes key) {
 	unsigned char nkey;
 	switch (key)
 	{
-	case KEY_Enter:			nkey = KEY_ENTER;		break;	
-	case KEY_Escape:		nkey = KEY_ESCAPE;		break;	
-	case KEY_Left: 			nkey = KEY_LEFTARROW;	break;	
-	case KEY_Right:			nkey = KEY_RIGHTARROW;	break;	
-	case KEY_Up: 			nkey = KEY_UPARROW;		break;	
-	case KEY_Down:			nkey = KEY_DOWNARROW;	break;	
-	case KEY_LeftControl: 	nkey = KEY_FIRE;		break;	
-	case KEY_Space: 		nkey = KEY_USE;			break;	
-	case KEY_LeftShift: 	nkey = KEY_RSHIFT;		break;
-	case KEY_Alt:			nkey = KEY_RALT;		break;
+	case KEY_Enter:			nkey = KEY_ENTER;			break;	
+	case KEY_Escape:		nkey = KEY_ESCAPE;			break;	
+	case KEY_Left: 			nkey = KEY_LEFTARROW;		break;	
+	case KEY_Right:			nkey = KEY_RIGHTARROW;		break;	
+	case KEY_Up: 			nkey = KEY_UPARROW;			break;	
+	case KEY_Down:			nkey = KEY_DOWNARROW;		break;	
+	case KEY_LeftControl: 	nkey = KEY_FIRE;			break;	
+	case KEY_Space: 		nkey = KEY_USE;				break;	
+	case KEY_LeftShift: 	nkey = KEY_RSHIFT;			break;
+	case KEY_Alt:			nkey = KEY_RALT;			break;
+	default:				nkey = tolower((char)key);	break;
 	}
 	return nkey;
 }
@@ -50,41 +51,8 @@ void addKeyToQueue(int pressed, enumKeyCodes keyCode) {
 	s_KeyQueueWriteIndex %= KEYQUEUE_SIZE;
 }
 
-class DoomKeyboardDelegate : public CCNode, public CCKeyboardDelegate {
-public:
-	static DoomKeyboardDelegate* create() {
-		auto ret = new DoomKeyboardDelegate();
-		if (ret && ret->init()) {
-			ret->autorelease();
-		} else {
-			delete ret;
-			ret = nullptr;
-		}
-		return ret;
-	}
-	
-	void keyDown(enumKeyCodes key) override {
-		addKeyToQueue(1, key);
-	}
-	
-	void keyUp(enumKeyCodes key) override {
-		addKeyToQueue(0, key);
-	}
-};
-DoomKeyboardDelegate* dkDelegate = nullptr;
-
-void cleanDoom() {
-	CCDirector::sharedDirector()->getKeyboardDispatcher()->removeDelegate(dkDelegate);
-	dkDelegate->release();
-	dkDelegate = nullptr;
-}
-
 void DG_Init() {
 	start = std::chrono::high_resolution_clock::now();
-	
-	dkDelegate = DoomKeyboardDelegate::create();
-	dkDelegate->setID("doom-keyboard-delegate");
-	CCDirector::sharedDirector()->getKeyboardDispatcher()->addDelegate(dkDelegate);
 }
 
 void DG_DrawFrame() {

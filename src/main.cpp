@@ -13,8 +13,6 @@ bool g_IsInitialized = false;
 CCTexture2D* g_Texture;
 CCSprite* g_Sprite;
 
-extern void cleanDoom();
-
 static float calculateMaxScale(const CCSize& size) {
     auto winSize = CCDirector::sharedDirector()->getWinSizeInPixels();
     float scaleWidth = winSize.width / size.width;
@@ -67,6 +65,7 @@ class $modify(MenuLayerHook, MenuLayer) {
 
         /* Disable touch for all current menus */
         setMenuTouch("MenuLayer", false);
+		setKeypadEnabled(false);
 		
 		/* Decide to use dehacked or file */
 		std::string pwadoption;
@@ -164,7 +163,7 @@ class $modify(MenuLayerHook, MenuLayer) {
         this->removeChildByID("doom-bkbtn-menu"_spr);
         
         /* Re-enable touch */
-		cleanDoom();
+		setKeypadEnabled(true);
         setMenuTouch("MenuLayer", true);
     }
     

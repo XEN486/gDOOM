@@ -1,3 +1,3 @@
-# Template Mod
+# GDOOM
 
-Edit about.md to change this
+The DOOM Engine running as a Geode mod. Custom IWADs and PWADs are supported in the settings.

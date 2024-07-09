@@ -5,14 +5,27 @@ extern "C" {
 #include <Geode/Geode.hpp>
 using namespace geode::prelude;
 
+#include <cmath>
+
 bool g_DrawDoom = false;
 bool g_IsInitialized = false;
 
 CCTexture2D* g_Texture;
 CCSprite* g_Sprite;
 
-extern void test();
 extern void cleanDoom();
+
+static float calculateMaxScale(const CCSize& size) {
+    auto winSize = CCDirector::sharedDirector()->getWinSizeInPixels();
+    float scaleWidth = winSize.width / size.width;
+    float scaleHeight = winSize.height / size.height;
+	log::debug("{}, {}", winSize.width, winSize.height);
+	log::debug("{}, {}", size.width, size.height);
+
+    float minScale = std::min(scaleWidth, scaleHeight);
+
+    return minScale - 0.5f;
+}
 
 #include <Geode/modify/MenuLayer.hpp>
 class $modify(MenuLayerHook, MenuLayer) {
@@ -33,8 +46,6 @@ class $modify(MenuLayerHook, MenuLayer) {
         doomButton->setID("doom-button"_spr);
 
         menu->updateLayout();
-		
-		test();
 
         return true;
     }
@@ -109,7 +120,8 @@ class $modify(MenuLayerHook, MenuLayer) {
 
         g_Sprite = CCSprite::createWithTexture(g_Texture);
         g_Sprite->setPosition(ccp(winSize.width / 2, winSize.height / 2));
-        g_Sprite->setScale(3);
+		auto scale = calculateMaxScale({DOOMGENERIC_RESX, DOOMGENERIC_RESY});
+        g_Sprite->setScale(scale);
         this->addChild(g_Sprite, 10);
         g_Sprite->setID("doom-sprite"_spr);
 
@@ -128,17 +140,20 @@ class $modify(MenuLayerHook, MenuLayer) {
 
         /* IDs */
         backButton->setID("doom-bkbutton"_spr);
+		backButton->setEnabled(true);
         menu->setID("doom-bkbtn-menu"_spr);
+		menu->setEnabled(true);
 
         /* Start drawing doom */
         g_DrawDoom = true;
         doomgeneric_Create(argc, const_cast<char**>(argv.data()));
+		DG_Init();
     }
     
     void onBackButton(CCObject*)
     {
         /* Set state */
-        g_DrawDoom = false;
+        g_DrawDoom = false;	
         
         /* Delete the doom sprite */
         this->removeChild(g_Sprite);
@@ -170,4 +185,8 @@ class $modify(MenuLayerHook, MenuLayer) {
             }
         }
     }
+	
+	void keyUp(enumKeyCodes key) {
+		log::debug("what");
+	}
 };

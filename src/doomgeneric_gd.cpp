@@ -34,12 +34,13 @@ static unsigned char convertToDoomKey(enumKeyCodes key) {
 	case KEY_Down:			nkey = KEY_DOWNARROW;	break;	
 	case KEY_LeftControl: 	nkey = KEY_FIRE;		break;	
 	case KEY_Space: 		nkey = KEY_USE;			break;	
-	case KEY_LeftShift: 	nkey = KEY_RSHIFT;		break;	
+	case KEY_LeftShift: 	nkey = KEY_RSHIFT;		break;
+	case KEY_Alt:			nkey = KEY_RALT;		break;
 	}
 	return nkey;
 }
 
-static void addKeyToQueue(int pressed, enumKeyCodes keyCode) {
+void addKeyToQueue(int pressed, enumKeyCodes keyCode) {
 	unsigned char key = convertToDoomKey(keyCode);
 
 	unsigned short keyData = (pressed << 8) | key;
@@ -78,14 +79,12 @@ void cleanDoom() {
 	dkDelegate = nullptr;
 }
 
-void test() {
+void DG_Init() {
+	start = std::chrono::high_resolution_clock::now();
+	
 	dkDelegate = DoomKeyboardDelegate::create();
 	dkDelegate->setID("doom-keyboard-delegate");
 	CCDirector::sharedDirector()->getKeyboardDispatcher()->addDelegate(dkDelegate);
-}
-
-void DG_Init() {
-	start = std::chrono::high_resolution_clock::now();
 }
 
 void DG_DrawFrame() {

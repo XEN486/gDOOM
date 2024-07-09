@@ -6,7 +6,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(DOOM VERSION 1.0.0)
 
-file(GLOB SRC_FILES src/*.cpp src/*.c)
+file(GLOB SRC_FILES src/*.cpp src/doom/*.c)
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 
 if (NOT DEFINED ENV{GEODE_SDK})

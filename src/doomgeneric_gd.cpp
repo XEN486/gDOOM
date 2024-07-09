@@ -1,6 +1,6 @@
 extern "C" {
-	#include "doomkeys.h"
-	#include "doomgeneric.h"
+	#include "doom/doomkeys.h"
+	#include "doom/doomgeneric.h"
 };
 
 #include <Geode/Geode.hpp>

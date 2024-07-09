@@ -1,5 +1,5 @@
 extern "C" {
-    #include "doomgeneric.h"
+    #include "doom/doomgeneric.h"
 };
 
 #include <Geode/Geode.hpp>

@@ -1,0 +1,64 @@
+{
+	"geode": "3.2.0",
+	"gd": {
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206",
+		"ios": "2.206"
+	},
+	"id": "xenon2028.doom",
+	"name": "DOOM",
+	"version": "v1.0.0",
+	"developer": "xenon2028",
+	"description": "Runs the DOOM Engine in Geometry Dash!",
+    "resources": {
+        "sprites": [
+            "resources/*.png"
+        ],
+		"files": [
+			"resources/doom1.wad"
+		]
+    },
+	"settings": {
+		"use-custom-pwad": {
+			"name": "Use custom PWAD",
+			"description": "Enable loading the PWAD specified in the custom PWAD path",
+			"type": "bool",
+			"default": false
+		},
+		
+		"custom-pwad-path": {
+			"name": "Custom PWAD path",
+			"description": "The path to the custom PWAD",
+			"type": "path",
+			"default": "Upload a file first.",
+			"control": {
+				"filter": [{"files": ["*.wad"], "description": "DOOM PWAD"}]
+			}
+		},
+		
+		"use-deh": {
+			"name": "Use Dehacked launch option",
+			"description": "Use the \"-deh\" launch option instead of the \"-file\" launch option for this PWAD",
+			"type": "bool",
+			"default": false
+		},
+		
+		"use-custom-iwad": {
+			"name": "Use custom IWAD",
+			"description": "Enable loading the IWAD specified in the custom IWAD path",
+			"type": "bool",
+			"default": false
+		},
+		
+		"custom-iwad-path": {
+			"name": "Custom IWAD path",
+			"description": "The path to the custom IWAD",
+			"type": "path",
+			"default": "Upload a file first.",
+			"control": {
+				"filter": [{"files": ["*.wad"], "description": "DOOM IWAD"}]
+			}
+		}
+	}
+}

@@ -5,7 +5,6 @@ extern "C" {
 #include <Geode/Geode.hpp>
 using namespace geode::prelude;
 
-extern void addKeyToQueue(int pressed, unsigned int keyCode);
 extern bool g_DrawDoom;
 extern bool g_IsInitialized;
 
@@ -20,26 +19,20 @@ class $modify(AppDelegate) {
     }
 };
 
+/* slightly faster windows rendering */
+#ifdef GEODE_IS_WINDOWS
 #include <Geode/modify/CCEGLView.hpp>
 class $modify(CCEGLView) {
-#ifdef GEODE_IS_WINDOWS
     void swapBuffers() {
         if (g_IsInitialized && g_DrawDoom)
             doomgeneric_Tick();
         
         CCEGLView::swapBuffers();
     }
-#endif
-
-	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-		if (action == GLFW_PRESS)
-			addKeyToQueue(1, key);
-		else if (action == GLFW_RELEASE)
-			addKeyToQueue(0, key);
-	}
 };
 
-#ifndef GEODE_IS_WINDOWS
+#else
+
 #include <Geode/modify/CCDirector.hpp>
 class $modify(CCDirector) {
     void drawScene() {

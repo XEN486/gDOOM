@@ -11,6 +11,9 @@ bool g_IsInitialized = false;
 CCTexture2D* g_Texture;
 CCSprite* g_Sprite;
 
+extern void test();
+extern void cleanDoom();
+
 #include <Geode/modify/MenuLayer.hpp>
 class $modify(MenuLayerHook, MenuLayer) {
     bool init() {
@@ -30,11 +33,15 @@ class $modify(MenuLayerHook, MenuLayer) {
         doomButton->setID("doom-button"_spr);
 
         menu->updateLayout();
+		
+		test();
 
         return true;
     }
 
     void onDoomButton(CCObject*) {
+		CCDirector* director = CCDirector::sharedDirector();
+		
         auto use_iwad = Mod::get()->getSettingValue<bool>("use-custom-iwad");
         auto use_pwad = Mod::get()->getSettingValue<bool>("use-custom-pwad");
 		auto use_deh  = Mod::get()->getSettingValue<bool>("use-dehacked");
@@ -42,7 +49,7 @@ class $modify(MenuLayerHook, MenuLayer) {
         auto iwadpath = Mod::get()->getSettingValue<std::filesystem::path>("custom-iwad-path").string();
         auto pwadpath = Mod::get()->getSettingValue<std::filesystem::path>("custom-pwad-path").string();
 		
-		log::debug("IWAD: {}\nPWAD: {}", iwadpath, pwadpath);
+		log::debug("IWAD: \"{}\", PWAD: \"{}\"", iwadpath, pwadpath);
 		
 		auto swadpath = (Mod::get()->getResourcesDir() / "doom1.wad").string();
 		std::vector<const char*> argv = { "GeometryDash.exe", "-iwad", swadpath.c_str() };
@@ -50,7 +57,7 @@ class $modify(MenuLayerHook, MenuLayer) {
         /* Disable touch for all current menus */
         setMenuTouch("MenuLayer", false);
 		
-		/* Decide to use merge, dehacked or file */
+		/* Decide to use dehacked or file */
 		std::string pwadoption;
 		if (use_deh)
 			pwadoption = "-deh";
@@ -98,7 +105,7 @@ class $modify(MenuLayerHook, MenuLayer) {
         g_Texture->initWithData(nullptr, kCCTexture2DPixelFormat_RGB888, DOOMGENERIC_RESX, DOOMGENERIC_RESY, CCSize(DOOMGENERIC_RESX, DOOMGENERIC_RESY));
         g_Texture->setAliasTexParameters(); /* nearest */
 
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
+        auto winSize = director->getWinSize();
 
         g_Sprite = CCSprite::createWithTexture(g_Texture);
         g_Sprite->setPosition(ccp(winSize.width / 2, winSize.height / 2));
@@ -142,6 +149,7 @@ class $modify(MenuLayerHook, MenuLayer) {
         this->removeChildByID("doom-bkbtn-menu"_spr);
         
         /* Re-enable touch */
+		cleanDoom();
         setMenuTouch("MenuLayer", true);
     }
     

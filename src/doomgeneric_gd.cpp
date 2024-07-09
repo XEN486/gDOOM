@@ -22,30 +22,66 @@ static unsigned int s_KeyQueueWriteIndex = 0;
 static unsigned int s_KeyQueueReadIndex = 0;
 std::chrono::high_resolution_clock::time_point start;
 
-static unsigned char convertToDoomKey(unsigned int key) {
+static unsigned char convertToDoomKey(enumKeyCodes key) {
+	unsigned char nkey;
 	switch (key)
 	{
-	case GLFW_KEY_ENTER: key = KEY_ENTER; break;	
-	case GLFW_KEY_ESCAPE: key = KEY_ESCAPE; break;	
-	case GLFW_KEY_LEFT: key = KEY_LEFTARROW; break;	
-	case GLFW_KEY_RIGHT: key = KEY_RIGHTARROW; break;	
-	case GLFW_KEY_UP: key = KEY_UPARROW; break;	
-	case GLFW_KEY_DOWN: key = KEY_DOWNARROW; break;	
-	case GLFW_KEY_LEFT_CONTROL: key = KEY_FIRE; break;	
-	case GLFW_KEY_SPACE: key = KEY_USE; break;	
-	case GLFW_KEY_LEFT_SHIFT: key = KEY_RSHIFT; break;	
+	case KEY_Enter:			nkey = KEY_ENTER;		break;	
+	case KEY_Escape:		nkey = KEY_ESCAPE;		break;	
+	case KEY_Left: 			nkey = KEY_LEFTARROW;	break;	
+	case KEY_Right:			nkey = KEY_RIGHTARROW;	break;	
+	case KEY_Up: 			nkey = KEY_UPARROW;		break;	
+	case KEY_Down:			nkey = KEY_DOWNARROW;	break;	
+	case KEY_LeftControl: 	nkey = KEY_FIRE;		break;	
+	case KEY_Space: 		nkey = KEY_USE;			break;	
+	case KEY_LeftShift: 	nkey = KEY_RSHIFT;		break;	
 	}
-	return key;
+	return nkey;
 }
 
-void addKeyToQueue(int pressed, unsigned int keyCode) {
+static void addKeyToQueue(int pressed, enumKeyCodes keyCode) {
 	unsigned char key = convertToDoomKey(keyCode);
 
 	unsigned short keyData = (pressed << 8) | key;
-
+	
 	s_KeyQueue[s_KeyQueueWriteIndex] = keyData;
 	s_KeyQueueWriteIndex++;
 	s_KeyQueueWriteIndex %= KEYQUEUE_SIZE;
+}
+
+class DoomKeyboardDelegate : public CCNode, public CCKeyboardDelegate {
+public:
+	static DoomKeyboardDelegate* create() {
+		auto ret = new DoomKeyboardDelegate();
+		if (ret && ret->init()) {
+			ret->autorelease();
+		} else {
+			delete ret;
+			ret = nullptr;
+		}
+		return ret;
+	}
+	
+	void keyDown(enumKeyCodes key) override {
+		addKeyToQueue(1, key);
+	}
+	
+	void keyUp(enumKeyCodes key) override {
+		addKeyToQueue(0, key);
+	}
+};
+DoomKeyboardDelegate* dkDelegate = nullptr;
+
+void cleanDoom() {
+	CCDirector::sharedDirector()->getKeyboardDispatcher()->removeDelegate(dkDelegate);
+	dkDelegate->release();
+	dkDelegate = nullptr;
+}
+
+void test() {
+	dkDelegate = DoomKeyboardDelegate::create();
+	dkDelegate->setID("doom-keyboard-delegate");
+	CCDirector::sharedDirector()->getKeyboardDispatcher()->addDelegate(dkDelegate);
 }
 
 void DG_Init() {
@@ -59,7 +95,7 @@ void DG_DrawFrame() {
 	float startY = winSize.height / 2 - DOOMGENERIC_RESY / 2;
 	
 	//g_Texture->updateWithData(data, 0, 0, texWidth, texHeight);
-	unsigned char* data = new unsigned char[DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4]; /* rgba */
+	unsigned char* data = new unsigned char[DOOMGENERIC_RESX * DOOMGENERIC_RESY * 3]; /* rgb */
 	
 	for (int y = 0; y < DOOMGENERIC_RESY; y++) {
 		for (int x = 0; x < DOOMGENERIC_RESX; x++) {

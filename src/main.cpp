@@ -14,11 +14,14 @@ CCTexture2D* g_Texture;
 CCSprite* g_Sprite;
 
 static float calculateMaxScale(const CCSize& size) {
-    auto winSize = CCDirector::sharedDirector()->getWinSizeInPixels();
-    float scaleWidth = winSize.width / size.width;
-    float scaleHeight = winSize.height / size.height;
-	log::debug("{}, {}", winSize.width, winSize.height);
-	log::debug("{}, {}", size.width, size.height);
+#ifdef GEODE_IS_MACOS
+	auto contentScale = 4;
+#else
+	auto contentScale = CCDirector::sharedDirector()->getContentScaleFactor();
+#endif
+    auto winSize = CCDirector::sharedDirector()->getWinSize();
+    float scaleWidth = winSize.width * contentScale / size.width;
+    float scaleHeight = winSize.height * contentScale / size.height;
 
     float minScale = std::min(scaleWidth, scaleHeight);
 

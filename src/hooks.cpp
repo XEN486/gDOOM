@@ -20,7 +20,7 @@ void doomLoop()
 	if (CCKeyboardDispatcher::get()->getControlKeyPressed()) { addKeyToQueue(1, KEY_LeftControl); prevLeftControl = true; } else if (prevLeftControl) { addKeyToQueue(0, KEY_LeftControl); prevLeftControl = false; }
 	if (CCKeyboardDispatcher::get()->getCommandKeyPressed()) { addKeyToQueue(1, KEY_LeftControl); prevLeftCommand = true; } else if (prevLeftCommand) { addKeyToQueue(0, KEY_LeftControl); prevLeftCommand = false; }
 	
-	/* Tic */
+	/* Tick */
 	doomgeneric_Tick();
 }
 

@@ -94,8 +94,7 @@ uint32_t DG_GetTicksMs()
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
 }
 
-int DG_GetKey(int* pressed, unsigned char* doomKey)
-{
+int DG_GetKey(int* pressed, unsigned char* doomKey) {
 	if (s_KeyQueueReadIndex == s_KeyQueueWriteIndex)
 	{
 		//key queue is empty

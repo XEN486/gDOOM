@@ -62,11 +62,12 @@
 
 #include <inttypes.h>
 
+#ifndef GEODE_IS_WINDOWS
 #if defined(__cplusplus)
 
 // Use builtin bool type with C++.
 
-//typedef bool boolean;
+typedef bool boolean;
 
 #else
 
@@ -77,6 +78,7 @@ typedef enum
 	undef	= 0xFFFFFFFF
 } boolean;
 
+#endif
 #endif
 
 typedef uint8_t byte;

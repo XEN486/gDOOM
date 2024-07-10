@@ -19,7 +19,7 @@ static float calculateMaxScale(const CCSize& size) {
 	auto winSize = CCDirector::sharedDirector()->getWinSize();
 	
 	winSize.width *= contentScale;
-	winSize.height *= ContentScale;
+	winSize.height *= contentScale;
 #else
 	auto winSize = CCDirector::sharedDirector()->getWinSizeInPixels();
 #endif

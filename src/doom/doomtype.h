@@ -62,11 +62,11 @@
 
 #include <inttypes.h>
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 // Use builtin bool type with C++.
 
-typedef bool boolean;
+//typedef bool boolean;
 
 #else
 

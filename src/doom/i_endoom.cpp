@@ -15,30 +15,37 @@
 //    Exit text-mode ENDOOM screen.
 //
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <string>
+#include <Geode/Geode.hpp>
+using namespace geode::prelude;
 
-#include "config.h"
-#include "doomtype.h"
-#include "i_video.h"
+extern void exitDoom();
 
-#ifdef ORIGCODE
-#include "txt_main.h"
-#endif
+extern "C" {
+	#include "config.h"
+	#include "doomtype.h"
+	#include "i_video.h"
 
-
-#ifdef __DJGPP__
-#include <go32.h>
-#endif  // __DJGPP__
+	#ifdef ORIGCODE
+	#include "txt_main.h"
+	#endif
 
 
-#define ENDOOM_W 80
-#define ENDOOM_H 25
+	#ifdef __DJGPP__
+	#include <go32.h>
+	#endif  // __DJGPP__
+
+
+	#define ENDOOM_W 80
+	#define ENDOOM_H 25
+};
 
 // 
 // Displays the text mode ending screen after the game quits
 //
 
+extern "C" void I_Endoom(byte*);
 void I_Endoom(byte *endoom_data)
 {
 #ifdef ORIGCODE
@@ -97,5 +104,7 @@ void I_Endoom(byte *endoom_data)
     movedata(_my_ds(), (unsigned) endoom_data, _dos_ds, 0xB8000UL, ENDOOM_W * ENDOOM_H * 2);
 
 #endif
-}
 
+	/* geode exit */
+	exitDoom();
+}

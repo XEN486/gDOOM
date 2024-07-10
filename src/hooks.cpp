@@ -9,6 +9,21 @@ extern bool g_DrawDoom;
 extern bool g_IsInitialized;
 extern void addKeyToQueue(int pressed, enumKeyCodes keyCode);
 
+bool prevLeftShift = false;
+bool prevLeftControl = false;
+bool prevLeftCommand = false;
+
+void doomLoop()
+{
+	/* Check modifier keys */
+	if (CCKeyboardDispatcher::get()->getShiftKeyPressed()) { addKeyToQueue(1, KEY_LeftShift); prevLeftShift = true; } else if (prevLeftShift) { addKeyToQueue(0, KEY_LeftShift); prevLeftShift = false; }
+	if (CCKeyboardDispatcher::get()->getControlKeyPressed()) { addKeyToQueue(1, KEY_LeftControl); prevLeftControl = true; } else if (prevLeftControl) { addKeyToQueue(0, KEY_LeftControl); prevLeftControl = false; }
+	if (CCKeyboardDispatcher::get()->getCommandKeyPressed()) { addKeyToQueue(1, KEY_LeftControl); prevLeftCommand = true; } else if (prevLeftCommand) { addKeyToQueue(0, KEY_LeftControl); prevLeftCommand = false; }
+	
+	/* Tic */
+	doomgeneric_Tick();
+}
+
 #include <Geode/modify/AppDelegate.hpp>
 class $modify(AppDelegate) {
     void willSwitchToScene(CCScene* scene) {
@@ -36,7 +51,7 @@ class $modify(CCKeyboardDispatcher) {
 class $modify(CCEGLView) {
     void swapBuffers() {
         if (g_IsInitialized && g_DrawDoom)
-            doomgeneric_Tick();
+            doomLoop();
         
         CCEGLView::swapBuffers();
     }
@@ -50,7 +65,7 @@ class $modify(CCDirector) {
         CCDirector::drawScene();
         
         if (g_IsInitialized && g_DrawDoom)
-            doomgeneric_Tick();
+            doomLoop();
     }
 };
 #endif

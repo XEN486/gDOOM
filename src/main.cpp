@@ -15,17 +15,35 @@ CCSprite* g_Sprite;
 
 static float calculateMaxScale(const CCSize& size) {
 #ifdef GEODE_IS_MACOS
-	auto contentScale = 4;
+	int contentScale = 4;
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
+	
+	winSize.width *= contentScale;
+	winSize.height *= ContentScale;
 #else
-	auto contentScale = CCDirector::sharedDirector()->getContentScaleFactor();
+	auto winSize = CCDirector::sharedDirector()->getWinSizeInPixels();
 #endif
-    auto winSize = CCDirector::sharedDirector()->getWinSize();
-    float scaleWidth = winSize.width * contentScale / size.width;
-    float scaleHeight = winSize.height * contentScale / size.height;
+    
+    float scaleWidth = winSize.width / size.width;
+    float scaleHeight = winSize.height / size.height;
 
     float minScale = std::min(scaleWidth, scaleHeight);
 
-    return minScale - 0.5f;
+    return minScale - 0.3f;
+}
+
+void exitDoom() {
+	g_DrawDoom = false;
+	
+	auto layer = static_cast<CCLayer*>(CCDirector::sharedDirector()->getRunningScene()->getChildByID("MenuLayer"));
+	
+	layer->removeChild(g_Sprite);
+	g_Texture->release();
+	
+	layer->removeChildByID("doom-bkbutton"_spr);
+	layer->removeChildByID("doom-bkbtn-menu"_spr);
+	
+	layer->setKeypadEnabled(true);
 }
 
 #include <Geode/modify/MenuLayer.hpp>
@@ -61,13 +79,10 @@ class $modify(MenuLayerHook, MenuLayer) {
         auto iwadpath = Mod::get()->getSettingValue<std::filesystem::path>("custom-iwad-path").string();
         auto pwadpath = Mod::get()->getSettingValue<std::filesystem::path>("custom-pwad-path").string();
 		
-		log::debug("IWAD: \"{}\", PWAD: \"{}\"", iwadpath, pwadpath);
-		
 		auto swadpath = (Mod::get()->getResourcesDir() / "doom1.wad").string();
 		std::vector<const char*> argv = { "GeometryDash.exe", "-iwad", swadpath.c_str() };
 
         /* Disable touch for all current menus */
-        setMenuTouch("MenuLayer", false);
 		setKeypadEnabled(false);
 		
 		/* Decide to use dehacked or file */
@@ -91,7 +106,7 @@ class $modify(MenuLayerHook, MenuLayer) {
                 "The IWAD at that path does not exist.",
                 "OK"
             )->show();
-			setMenuTouch("MenuLayer", true);
+			setKeypadEnabled(true);
             return;
         }
 
@@ -106,7 +121,7 @@ class $modify(MenuLayerHook, MenuLayer) {
                     "The PWAD at that path does not exist.",
                     "OK"
                 )->show();
-				setMenuTouch("MenuLayer", true);
+				setKeypadEnabled(true);
                 return;
             }
         }
@@ -154,41 +169,6 @@ class $modify(MenuLayerHook, MenuLayer) {
     
     void onBackButton(CCObject*)
     {
-        /* Set state */
-        g_DrawDoom = false;	
-        
-        /* Delete the doom sprite */
-        this->removeChild(g_Sprite);
-        g_Texture->release();
-        
-        /* Delete the back button */
-        this->removeChildByID("doom-bkbutton"_spr);
-        this->removeChildByID("doom-bkbtn-menu"_spr);
-        
-        /* Re-enable touch */
-		setKeypadEnabled(true);
-        setMenuTouch("MenuLayer", true);
+        exitDoom();
     }
-    
-    void setMenuTouch(std::string layerName, bool enabled) {
-        /* Get the scene and the layer */
-        auto scene = CCDirector::sharedDirector()->getRunningScene();
-        auto layer = scene->getChildByID(layerName);
-        
-        /* For each object in the CCArray */
-        CCObject* item;
-        CCARRAY_FOREACH(layer->getChildren(), item)
-        {
-            /* If possible, then cast CCObject to CCMenu */
-            if (auto menu = typeinfo_cast<CCMenu*>(item))
-            {
-                /* Set the touch */
-                menu->setEnabled(enabled);
-            }
-        }
-    }
-	
-	void keyUp(enumKeyCodes key) {
-		log::debug("what");
-	}
 };
